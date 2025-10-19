@@ -17,6 +17,7 @@ const {
   logIn,
   signIn,
   verifySignIn,
+  checkAuth,
   logOut
 } = require("../services/authServises/authService");
 
@@ -24,6 +25,8 @@ const {
   forgotPassword,
   passwordResetCode,
 } = require("../services/authServises/forgotPassword");
+
+const protect_allowedTo = require("../services/authServises/protect&allowedTo");
 
 const router = express.Router();
 
@@ -53,6 +56,14 @@ router
   .post(
     verifySignInValidator,
     verifySignIn
+  );
+
+router
+  .route("/checkauth")
+  .get(
+    protect_allowedTo.protect(),
+    protect_allowedTo.allowedTo("admin", "customer"),
+    checkAuth
   );
 
 router

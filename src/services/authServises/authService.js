@@ -50,7 +50,10 @@ exports.logIn = asyncHandler(async (req, res, next) => {
   const document = await userModel.findOne({ email: body.email });
 
   // Check if user exists and password matches
-  if (!document || !(await bcrypt.compare(body.password, document.password || ""))) {
+  if (
+    !document ||
+    !(await bcrypt.compare(body.password, document.password || ""))
+  ) {
     return next(new ApiError("Invalid email or password.", 401));
   }
 
@@ -103,7 +106,10 @@ exports.signIn = asyncHandler(async (req, res, next) => {
 
   // Generate new verification code and hash it for security
   const verificationCode = generateSixDigitCode();
-  const hashVerificationCode = crypto.createHash("sha256").update(verificationCode).digest("hex");
+  const hashVerificationCode = crypto
+    .createHash("sha256")
+    .update(verificationCode)
+    .digest("hex");
   const codeExpires = Date.now() + 5 * 60 * 1000; // 5 minutes expiration
 
   let user;
@@ -170,7 +176,10 @@ exports.verifySignIn = asyncHandler(async (req, res, next) => {
   const user = await userModel.findOne({ email });
 
   // Hash the provided verification code for comparison
-  const hashVerificationCode = crypto.createHash("sha256").update(verificationCode).digest("hex");
+  const hashVerificationCode = crypto
+    .createHash("sha256")
+    .update(verificationCode)
+    .digest("hex");
 
   // Check if verification code matches and hasn't expired
   if (
@@ -222,6 +231,21 @@ exports.verifySignIn = asyncHandler(async (req, res, next) => {
       firstName: user.firstName,
       lastName: user.lastName,
       profileImage: user.profileImage || "",
+    },
+  });
+});
+
+// @desc check user authentication
+// @route GET /api/v1/auth/checkauth
+// @access Public
+exports.checkAuth = asyncHandler(async (req, res) => {
+  res.status(200).json({
+    status: "Success",
+    message: "User is authenticated.",
+    user: {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      profileImage: req.user.profileImage,
     },
   });
 });
