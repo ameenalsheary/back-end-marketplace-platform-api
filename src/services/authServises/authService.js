@@ -227,11 +227,6 @@ exports.verifySignIn = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: "Success",
     message: "Signed in successfully.",
-    user: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      profileImage: user.profileImage || "",
-    },
   });
 });
 
@@ -246,6 +241,7 @@ exports.checkAuth = asyncHandler(async (req, res) => {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       profileImage: req.user.profileImage,
+      rule: req.user.role,
     },
   });
 });
