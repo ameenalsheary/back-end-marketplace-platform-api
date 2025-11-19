@@ -805,10 +805,17 @@ exports.applyCouponToCustomerCart = asyncHandler(async (req, res) => {
   // Expire Stripe session if exists
   await expireStripeSession(stripeCheckOutSessionId);
 
+  // Check if the coupon has been applied
+  const couponApplied = cart?.coupon?.couponCode;
+
+  const message = couponApplied
+    ? "Price discount applied successfully"
+    : "No discount applied";
+
   // Send the response with the updated cart information
   res.status(200).json({
     status: "Success",
-    message: "Price discount applied successfully",
+    message,
     numOfCartItems: cart.cartItems.length,
     data: cart,
   });
