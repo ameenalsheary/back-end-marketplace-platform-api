@@ -9,6 +9,7 @@ const createToken = require("../../utils/createToken");
 const { userPropertysPrivate } = require("../../utils/propertysPrivate");
 const { signInTemplate } = require("../../utils/mailTemplates");
 const sendEmail = require("../../utils/sendEmail");
+const accessTokensettings = require("../../utils/accessTokensettings");
 
 // @desc Sign up
 // @route POST /api/v1/auth/signup
@@ -216,14 +217,8 @@ exports.verifySignIn = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
 
   // Set JWT token as HTTP-only cookie for security
-  res.cookie("accessToken", token, {
-    httpOnly: true, // Prevents client-side JavaScript access
-    secure: process.env.MODE_ENV === "production", // HTTPS only in production
-    sameSite: process.env.MODE_ENV === "production" ? "None" : "Lax", // Cross-site requests allowed
-    domain: ".eshopapp.shop", // Allow cookie on all subdomains
-    path: "/", // send cookie on all routes
-    maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days expiration
-  });
+  const maxAge = 90 * 24 * 60 * 60 * 1000; // 90 days expiration
+  res.cookie("accessToken", token, accessTokensettings(maxAge));
 
   // Send success response
   res.status(200).json({
@@ -253,14 +248,8 @@ exports.checkAuth = asyncHandler(async (req, res) => {
 // @access Public
 exports.logOut = asyncHandler(async (_, res) => {
   // Clear JWT cookie by setting it to empty and expired
-  res.cookie("accessToken", "", {
-    httpOnly: true,
-    secure: process.env.MODE_ENV === "production",
-    sameSite: process.env.MODE_ENV === "production" ? "None" : "Lax",
-    domain: ".eshopapp.shop",
-    path: "/",
-    expires: new Date(0), // Expire immediately
-  });
+  const maxAge = new Date(0); // Expire immediately
+  res.cookie("accessToken", "", accessTokensettings(maxAge));
 
   // Return success response
   res.status(200).json({
