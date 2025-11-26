@@ -23,7 +23,7 @@ const mountRoutes = (app) => {
   app.use(`/api/v1/coupons`, couponRoutes);
   app.use(`/api/v1/app-settings`, appSettingsRoutes);
   app.use(`/api/v1/auth`, authRoutes);
-  app.use(`/auth/google`, googleAuthRoutes);
+  app.use(`/api/auth/google`, googleAuthRoutes);
   app.use(`/api/v1/customer`, customerRoute);
   // app.use(`/api/v1/reviews`, reviewRoutes);
 };
