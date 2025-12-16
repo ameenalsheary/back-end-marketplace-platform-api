@@ -301,8 +301,8 @@ exports.customerCreateStripeCheckoutSession = asyncHandler(async (req, res, next
     line_items: lineItems,
     mode: 'payment',
     discounts: [{ promotion_code }],
-    success_url: `${process.env.FRONT_END_BASE_URL}/customer/orders`,
-    cancel_url: `${process.env.FRONT_END_BASE_URL}/customer/shopping-cart`,
+    success_url: `${process.env.FRONT_END_URL}/profile/orders`,
+    cancel_url: `${process.env.FRONT_END_URL}/shopping-cart`,
     customer_email,
     metadata: {
       cartId: cart._id.toString(),
