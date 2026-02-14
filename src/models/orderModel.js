@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { nanoid } = require("nanoid");
+const { v4: uuidv4 } = require("uuid");
 
 // Define Order Item Schema (similar to Cart Item Schema)
 const orderItemSchema = new mongoose.Schema(
@@ -172,9 +172,9 @@ orderSchema.pre("save", async function (next) {
 
     // Keep generating until we get a unique one
     while (!isUnique) {
-      // Generate a 12-character URL-safe ID (good balance between uniqueness and readability)
-      generatedOrderID = nanoid(12);
-      
+      // Generate a UUID v4 (globally unique identifier)
+      generatedOrderID = `${uuidv4()}-${Date.now()}`;
+
       // Check if this orderID already exists
       // Use this.constructor to reference the model without circular dependency
       const existingOrder = await this.constructor.findOne({ orderID: generatedOrderID });
