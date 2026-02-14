@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { nanoid } = require("nanoid");
 
 // Define Order Item Schema (similar to Cart Item Schema)
 const orderItemSchema = new mongoose.Schema(
@@ -42,6 +43,12 @@ const orderItemSchema = new mongoose.Schema(
 // Define Order Schema
 const orderSchema = new mongoose.Schema(
   {
+    orderID: {
+      type: String,
+      unique: true,
+      index: true,
+      trim: true,
+    },
     user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
@@ -98,7 +105,7 @@ const orderSchema = new mongoose.Schema(
     paymentStatus: {
       type: String,
       required: [true, "Payment status is required."],
-      enum: ["pending", "completed", "failed"],
+      enum: ["pending", "completed"],
       default: "pending",
     },
     paidAt: { type: Date },
@@ -155,5 +162,30 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Generate orderID before saving if it doesn't exist
+orderSchema.pre("save", async function (next) {
+  // Only generate orderID if it's not already set
+  if (!this.orderID) {
+    let isUnique = false;
+    let generatedOrderID;
+
+    // Keep generating until we get a unique one
+    while (!isUnique) {
+      // Generate a 12-character URL-safe ID (good balance between uniqueness and readability)
+      generatedOrderID = nanoid(12);
+      
+      // Check if this orderID already exists
+      // Use this.constructor to reference the model without circular dependency
+      const existingOrder = await this.constructor.findOne({ orderID: generatedOrderID });
+      if (!existingOrder) {
+        isUnique = true;
+      }
+    }
+
+    this.orderID = generatedOrderID;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Order", orderSchema);

@@ -80,6 +80,7 @@ exports.filterOrders = asyncHandler(async (req, _, next) => {
   req.query = {
     ...req.query,
     fields: [
+      "orderID",
       "pricing",
       "coupon",
       "paymentMethod",
