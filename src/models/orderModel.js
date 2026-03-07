@@ -188,4 +188,16 @@ orderSchema.pre("save", async function (next) {
   next();
 });
 
+// Run before any find query
+orderSchema.pre(/^find/, function (next) {
+  // Populate product field in order items
+  this.populate({
+    path: "orderItems.product",
+    select: "imageCover"
+  });
+
+  // Continue query execution
+  next();
+});
+
 module.exports = mongoose.model("Order", orderSchema);
